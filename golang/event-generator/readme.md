@@ -1,5 +1,9 @@
 # Events generator
 
+This is a simple go script which converts lat/lon vessel coordinate date to vessel events
+by iterating line by line over the positions file and detecting changes in the berth or status columns 
+and writing out the corresponding berth_changed or status_changed event.
+
 ## To Run
 
 `go run generate_events.go`
