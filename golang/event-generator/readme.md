@@ -10,12 +10,17 @@ and writing out the corresponding berth_changed or status_changed event.
 
 ## Tasks
 
-- run over all files in positions dir
-- use a csv library instead of manual parsing
-- general code clean ups / bigfixes
-- process input files in parallel
-- handle berth entry / exit instead of just change
-- make the code more generic to handle arbitrary changing columns
-- pass the remaining positions columns to the events table
-- (advanced) brainstorm how to handle boundaries between positions files
-
+- general improvements
+    - add comments
+    - don't re-process the first position
+    - extract a test for the functionality
+- improve event detection
+    - pull it out into a separate function
+    - create berth entry / exit events instead of just change events
+    - copy other positions fields into the events struct
+    - handle different column changes more generically
+- I/O
+    - write the events to a file instead of just logging
+    - read positions from the csv files instead of the hard-coded example
+    - Extra credit: read from files in parallel
+    - (advanced) brainstorm how to handle boundaries between the end of one positions file and the start of the next
