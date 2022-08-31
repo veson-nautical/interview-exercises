@@ -1,11 +1,7 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strconv"
-	"strings"
 )
 
 type Position struct {
@@ -23,88 +19,56 @@ type Event struct {
 	event_type string
 }
 
-func readPosition(line string) Position {
-	row := strings.Split(line, ",")
-	imo, err := strconv.Atoi(row[0])
-	if err != nil {
-		imo = 0
-	}
-	lat, err := strconv.ParseFloat(row[2], 64)
-	if err != nil {
-		lat = 0
-	}
-	lon, err := strconv.ParseFloat(row[3], 64)
-	if err != nil {
-		lon = 0
-	}
-	berth_id, err := strconv.ParseFloat(row[4], 32)
-	if err != nil {
-		berth_id = 0
-	}
-	navigational_status, _ := strconv.Atoi(row[5])
-	if err != nil {
-		navigational_status = 0
-	}
-	return Position{
-		imo:                 imo,
-		timestamp:           row[1],
-		lat:                 lat,
-		lon:                 lon,
-		berth_id:            int(berth_id),
-		navigational_status: navigational_status,
-	}
+var positions = []Position{
+	{
+		imo:                 1,
+		timestamp:           "2020-01-01T00:00:00Z",
+		lat:                 29.0,
+		lon:                 -140.0,
+		berth_id:            0,
+		navigational_status: 0,
+	},
+	{
+		imo:                 1,
+		timestamp:           "2020-01-02T00:00:00Z",
+		lat:                 30.0,
+		lon:                 -130.0,
+		berth_id:            0,
+		navigational_status: 3,
+	},
+	{
+		imo:                 1,
+		timestamp:           "2020-01-03T00:00:00Z",
+		lat:                 40.0,
+		lon:                 -140.0,
+		berth_id:            2,
+		navigational_status: 1,
+	},
 }
 
 func main() {
-	file, err := os.Open("positions/2022-01_positions.csv")
-	if err != nil {
-		panic(err)
-	}
-
-	scanner := bufio.NewScanner(file)
-
-	scanner.Scan() // skip header
-	scanner.Scan()
-	lastPosition := readPosition(scanner.Text())
 	events := []Event{}
-
-	for scanner.Scan() {
-		line := scanner.Text()
-		if line == "" {
-			continue
-		}
-		position := readPosition(line)
-
-		if position.berth_id != lastPosition.berth_id {
+	previousPosition := positions[0]
+	for _, position := range positions {
+		if position.berth_id != previousPosition.berth_id {
 			events = append(events, Event{
 				imo:        position.imo,
 				timestamp:  position.timestamp,
 				event_type: "berth_change",
 			})
 		}
-		if position.navigational_status != lastPosition.navigational_status {
+		if position.navigational_status != previousPosition.navigational_status {
 			events = append(events, Event{
 				imo:        position.imo,
 				timestamp:  position.timestamp,
 				event_type: "status_change",
 			})
 		}
-		lastPosition = position
+		previousPosition = position
 	}
 
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
-	// write events to file
-	file, err = os.Create("events/2022-01_events.csv")
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	file.WriteString("imo,timestamp,event_type\n")
+	// write events
 	for _, event := range events {
-		file.WriteString(fmt.Sprintf("%d,%s,%s\n", event.imo, event.timestamp, event.event_type))
+		fmt.Printf(fmt.Sprintf("%d,%s,%s\n", event.imo, event.timestamp, event.event_type))
 	}
 }
