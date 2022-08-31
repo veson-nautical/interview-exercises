@@ -1,0 +1,10 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.book {
+  border-bottom: 1px solid #ddd;
+  padding: 1rem 2rem;
+  text-align: left;
+}
