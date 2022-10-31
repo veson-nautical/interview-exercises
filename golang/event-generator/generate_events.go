@@ -4,13 +4,11 @@ import (
 	"fmt"
 )
 
-type Position struct {
-	imo                 int
-	timestamp           string
-	lat                 float64
-	lon                 float64
-	berth_id            int
-	navigational_status int
+type VesselState struct {
+	imo       int
+	timestamp string
+	port_id   int
+	speed     int
 }
 
 type Event struct {
@@ -19,52 +17,54 @@ type Event struct {
 	event_type string
 }
 
-var positions = []Position{
+var vessel_states = []VesselState{
 	{
-		imo:                 1,
-		timestamp:           "2020-01-01T00:00:00Z",
-		lat:                 29.0,
-		lon:                 -140.0,
-		berth_id:            0,
-		navigational_status: 0,
+		// IMO is a unique vessel identifier
+		imo:       1,
+		timestamp: "2020-01-01T00:00:00Z",
+		// 0 means not in port
+		port_id: 0,
+		speed:   10,
 	},
 	{
-		imo:                 1,
-		timestamp:           "2020-01-02T00:00:00Z",
-		lat:                 30.0,
-		lon:                 -130.0,
-		berth_id:            0,
-		navigational_status: 3,
+		imo:       1,
+		timestamp: "2020-01-02T00:00:00Z",
+		port_id:   0,
+		speed:     8,
 	},
 	{
-		imo:                 1,
-		timestamp:           "2020-01-03T00:00:00Z",
-		lat:                 40.0,
-		lon:                 -140.0,
-		berth_id:            2,
-		navigational_status: 1,
+		imo:       1,
+		timestamp: "2020-01-03T00:00:00Z",
+		port_id:   2,
+		speed:     0,
+	},
+	{
+		imo:       1,
+		timestamp: "2020-01-03T00:00:00Z",
+		port_id:   0,
+		speed:     8,
 	},
 }
 
 func main() {
 	events := []Event{}
-	previousPosition := positions[0]
-	for _, position := range positions {
-		if position.berth_id != previousPosition.berth_id {
+	previousState := vessel_states[0]
+	for _, state := range vessel_states {
+		if state.port_id != previousState.port_id {
 			events = append(events, Event{
-				imo:        position.imo,
-				timestamp:  position.timestamp,
-				event_type: "berth_change",
+				imo:        state.imo,
+				timestamp:  state.timestamp,
+				event_type: "port_change",
 			})
 		}
-		if position.navigational_status != previousPosition.navigational_status {
+		if state.speed != previousState.speed {
 			events = append(events, Event{
-				imo:        position.imo,
-				timestamp:  position.timestamp,
-				event_type: "status_change",
+				imo:        state.imo,
+				timestamp:  state.timestamp,
+				event_type: "speed_change",
 			})
 		}
-		previousPosition = position
+		previousState = state
 	}
 
 	// write events
