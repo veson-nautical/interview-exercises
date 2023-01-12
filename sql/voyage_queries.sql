@@ -13,8 +13,7 @@ CREATE TABLE ports (
 CREATE TABLE voyages (
     voyage_id int,
     vessel_id int,
-    commence_date timestamp,
-    complete_date timestamp,
+    commence_date timestamp
 )
 
 CREATE TABLE voyage_itineraries (
@@ -29,6 +28,7 @@ CREATE TABLE voyage_itineraries (
 
 -- Voyages commenced in the last year
 -- Voyages for the vessel named ACACIA
+-- How many arrivals will there be for each port in the next 2 weeks. (port_name, arrival_count)
 -- The top 10 voyages with the most itinerary entries
 -- Voyages that end at the port named HOUSTON
 -- Voyages and their durations (arrival date of last itinerary - departure date of first itinerary)
